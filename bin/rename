@@ -3,7 +3,7 @@
 # Author: William (B.J.) Snow Orvis
 #
 # == Synopsis
-# rename: renames all files specified by matching a regular expression
+# Renames all files specified by matching a regular expression
 # to their name.
 #
 # == Usage
@@ -14,9 +14,23 @@
 # -h --help:
 #     This help
 
+require 'getoptlong'
+
 def usage
   require 'rdoc/usage'
-  RDoc::usage('Usage')
+  RDoc::usage('Synopsis','Usage')
+end
+
+
+opts = GetoptLong.new(
+  [ '--help', '-h', GetoptLong::NO_ARGUMENT ]
+)
+
+opts.each do |opt, arg|
+  case opt
+  when '--help'
+    usage
+  end
 end
 
 usage

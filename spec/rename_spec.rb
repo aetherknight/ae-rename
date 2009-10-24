@@ -13,4 +13,10 @@ describe RENAME do
     end
   end
 
+  it "should print its usage if --help is specified" do
+    PTY.spawn("#{RENAME} --help") do |stdin, stdout, pid|
+      stdin.expect(/(.*)Usage(.*)$/).should_not == nil
+      stdin.expect(/rename (.*)\r\n/).should_not == nil
+    end
+  end
 end
