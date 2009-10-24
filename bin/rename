@@ -1,0 +1,22 @@
+#!/usr/bin/env ruby
+# -*- ruby -*-
+# Author: William (B.J.) Snow Orvis
+#
+# == Synopsis
+# rename: renames all files specified by matching a regular expression
+# to their name.
+#
+# == Usage
+# rename [-p|--pretend] matchexpr [files ...]
+#
+# -p --pretend:
+#     Print how the file names would change rather than actually doing it.
+# -h --help:
+#     This help
+
+def usage
+  require 'rdoc/usage'
+  RDoc::usage('Usage')
+end
+
+usage
