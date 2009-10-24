@@ -21,6 +21,7 @@ def usage
   RDoc::usage('Synopsis','Usage')
 end
 
+usage if ARGV.length == 0
 
 opts = GetoptLong.new(
   [ '--help', '-h', GetoptLong::NO_ARGUMENT ]
@@ -33,4 +34,7 @@ opts.each do |opt, arg|
   end
 end
 
-usage
+fname = "a"
+newfname = fname.sub(/a/,'b')
+File.rename(fname, newfname)
+
