@@ -88,4 +88,27 @@ describe RENAME do
     Dir.entries('.').should be_include('ca')
   end
 
+  it "should print each file renaming if --verbose is specified" do
+    `touch a b c`
+    Dir.entries('.').should be_include('a')
+    Dir.entries('.').should be_include('b')
+    Dir.entries('.').should be_include('c')
+    Dir.entries('.').should_not be_include('aa')
+    Dir.entries('.').should_not be_include('ba')
+    Dir.entries('.').should_not be_include('ca')
+
+    PTY.spawn("#{RENAME} --verbose '.' '\\0a' *") do |stdin, stdout, pid|
+      stdin.expect("a => aa").should_not == nil
+      stdin.expect("b => ba").should_not == nil
+      stdin.expect("c => ca").should_not == nil
+    end
+
+    Dir.entries('.').should_not be_include('a')
+    Dir.entries('.').should_not be_include('b')
+    Dir.entries('.').should_not be_include('c')
+    Dir.entries('.').should be_include('aa')
+    Dir.entries('.').should be_include('ba')
+    Dir.entries('.').should be_include('ca')
+  end
+
 end

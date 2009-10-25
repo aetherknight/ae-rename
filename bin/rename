@@ -21,16 +21,21 @@ def usage
   RDoc::usage('Synopsis','Usage')
 end
 
+print_action = false
+
 usage if ARGV.length == 0
 
 opts = GetoptLong.new(
-  [ '--help', '-h', GetoptLong::NO_ARGUMENT ]
+  [ '--help', '-h', GetoptLong::NO_ARGUMENT ],
+  [ '--verbose', '-v', GetoptLong::NO_ARGUMENT ]
 )
 
 opts.each do |opt, arg|
   case opt
   when '--help'
     usage
+  when '--verbose'
+    print_action = true
   end
 end
 
@@ -39,6 +44,8 @@ replace_pat = ARGV.shift
 
 ARGV.each do |oldname|
   newname = oldname.sub(match_pat, replace_pat)
+
+  puts "#{oldname} => #{newname}" if print_action
   File.rename(oldname, newname)
 end
 
