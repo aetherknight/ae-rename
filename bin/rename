@@ -36,7 +36,9 @@ end
 
 match_pat = Regexp.new(ARGV.shift)
 replace_pat = ARGV.shift
-oldname = ARGV.shift
-newname = oldname.sub(match_pat, replace_pat)
-File.rename(oldname, newname)
+
+ARGV.each do |oldname|
+  newname = oldname.sub(match_pat, replace_pat)
+  File.rename(oldname, newname)
+end
 
