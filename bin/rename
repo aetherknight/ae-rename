@@ -34,7 +34,9 @@ opts.each do |opt, arg|
   end
 end
 
-fname = "a"
-newfname = fname.sub(/a/,'b')
-File.rename(fname, newfname)
+match_pat = Regexp.new(ARGV.shift)
+replace_pat = ARGV.shift
+oldname = ARGV.shift
+newname = oldname.sub(match_pat, replace_pat)
+File.rename(oldname, newname)
 

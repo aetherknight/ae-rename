@@ -43,16 +43,16 @@ describe RENAME do
     Dir.entries('.').should be_include('b')
   end
 
-#  it "should rename a file 'b' to 'c' when invoked as `rename 'b' 'c' b`" do
-#    `touch a`
-#    Dir.entries('.').should be_include('b')
-#    Dir.entries('.').should_not be_include('c')
-#
-#    PTY.spawn("#{RENAME} 'b' 'c' b") do |stdin, stdout, pid|
-#      stdin.expect("").should == nil
-#    end
-#    Dir.entries('.').should_not be_include('b')
-#    Dir.entries('.').should be_include('c')
-#  end
+  it "should rename a file 'bc' to 'cdc' when invoked as `rename 'b' 'cd' bc`" do
+    `touch bc`
+    Dir.entries('.').should be_include('bc')
+    Dir.entries('.').should_not be_include('cdc')
+
+    PTY.spawn("#{RENAME} 'b' 'cd' bc") do |stdin, stdout, pid|
+      stdin.expect("").should == nil
+    end
+    Dir.entries('.').should_not be_include('bc')
+    Dir.entries('.').should be_include('cdc')
+  end
 
 end
