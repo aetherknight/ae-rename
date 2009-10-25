@@ -55,4 +55,15 @@ describe RENAME do
     Dir.entries('.').should be_include('cdc')
   end
 
+  it "should rename a file 'bc' to 'ccd' when invoked as `rename 'b(.)' '\\1cd' bc`" do
+    `touch bc`
+    Dir.entries('.').should be_include('bc')
+    Dir.entries('.').should_not be_include('ccd')
+
+    PTY.spawn("#{RENAME} 'b(.)' '\\1cd' bc") do |stdin, stdout, pid|
+      stdin.expect("").should == nil
+    end
+    Dir.entries('.').should_not be_include('bc')
+    Dir.entries('.').should be_include('ccd')
+  end
 end
