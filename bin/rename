@@ -22,11 +22,13 @@ def usage
 end
 
 print_action = false
+do_action = true
 
 usage if ARGV.length == 0
 
 opts = GetoptLong.new(
   [ '--help', '-h', GetoptLong::NO_ARGUMENT ],
+  [ '--pretend', '-p', GetoptLong::NO_ARGUMENT ],
   [ '--verbose', '-v', GetoptLong::NO_ARGUMENT ]
 )
 
@@ -36,16 +38,21 @@ opts.each do |opt, arg|
     usage
   when '--verbose'
     print_action = true
+  when '--pretend'
+    print_action = true
+    do_action = false
   end
 end
 
 match_pat = Regexp.new(ARGV.shift)
 replace_pat = ARGV.shift
 
+puts "I would do the following renames without --pretend/-p:" if not do_action and print_action
+
 ARGV.each do |oldname|
   newname = oldname.sub(match_pat, replace_pat)
 
   puts "#{oldname} => #{newname}" if print_action
-  File.rename(oldname, newname)
+  File.rename(oldname, newname) if do_action
 end
 
