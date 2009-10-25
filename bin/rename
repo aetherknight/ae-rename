@@ -7,7 +7,20 @@
 # to their name.
 #
 # == Usage
-# rename [-p|--pretend] matchexpr [files ...]
+# rename [-p|--pretend] before_pattern after_pattern [files ...]
+#
+# before_pattern:
+#     Match first occurence of this pattern in each of files.
+#     Example: '.' matches the first character
+#
+# after_pattern:
+#     Replace before_pattern match in each filename with this.
+#     Example: '\0a' appends an 'a' after the matched before_pattern.
+#
+# files:
+#     One or more filenames to apply the match and replace to.
+#
+# === Options
 #
 # -p --pretend:
 #     Print how the file names would change rather than actually doing it.
@@ -18,7 +31,7 @@ require 'getoptlong'
 
 def usage
   require 'rdoc/usage'
-  RDoc::usage('Synopsis','Usage')
+  RDoc::usage('Synopsis','Usage','Options')
 end
 
 print_action = false
