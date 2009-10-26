@@ -137,4 +137,27 @@ describe RENAME do
     Dir.entries('.').should_not be_include('ca')
   end
 
+  it "should not accidentally overwrite another file that will get renamed" do
+    # make files a and aa, each with their name as their contents
+    File.open('a', "w") { |a| a.write "a" }
+    File.open('aa', "w") { |aa| aa.write "aa" }
+    # verify this setup
+    Dir.entries('.').should be_include('a')
+    File.open('a') { |a| a.readlines[0].should == 'a' }
+    Dir.entries('.').should be_include('aa')
+    File.open('aa') { |a| a.readlines[0].should == 'aa' }
+    # make sure the result file does not exist yet
+    Dir.entries('.').should_not be_include('aaa')
+
+    PTY.spawn("#{@rename} '.+' '\\0a' *") do |stdin, stdout, pid|
+      stdin.expect("").should == nil
+    end
+
+    Dir.entries('.').should_not be_include('a')
+    Dir.entries('.').should be_include('aa')
+    File.open('aa') { |a| a.readlines[0].should == 'a' }
+    Dir.entries('.').should be_include('aaa')
+    File.open('aaa') { |a| a.readlines[0].should == 'aa' }
+  end
+
 end

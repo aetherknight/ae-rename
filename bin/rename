@@ -62,10 +62,30 @@ replace_pat = ARGV.shift
 
 puts "I would do the following renames without --pretend/-p:" if not do_action and print_action
 
-ARGV.each do |oldname|
-  newname = oldname.sub(match_pat, replace_pat)
+oldnames = ARGV
+tmpnames = oldnames.map { |oldname| "#{oldname}.rename.tmp" }
+newnames = oldnames.map { |oldname| oldname.sub(match_pat, replace_pat) }
 
-  puts "#{oldname} => #{newname}" if print_action
-  File.rename(oldname, newname) if do_action
+# first pass. rename a file to its new name unless it may overwrite another one
+# that might be renamed later, in which case rename it to a temporary name.
+tmpnames = []
+oldnames.each_index do |i|
+  if oldnames.include? newnames[i]
+    tmpnames[i] = "#{oldnames[i]}.rename.tmp"
+    puts "#{oldnames[i]} => #{tmpnames[i]}" if print_action
+    File.rename(oldnames[i], tmpnames[i]) if do_action
+  else
+    puts "#{oldnames[i]} => #{newnames[i]}" if print_action
+    File.rename(oldnames[i], newnames[i]) if do_action
+  end
+end
+
+# second pass. rename files that have been temporarily renamed to their new
+# name.
+tmpnames.each_index do |i|
+  if tmpnames[i] != nil
+    puts "#{tmpnames[i]} => #{newnames[i]}" if print_action
+    File.rename(tmpnames[i], newnames[i]) if do_action
+  end
 end
 
