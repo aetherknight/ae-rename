@@ -9,25 +9,21 @@
 # == Usage
 # rename [options] before_pattern after_pattern [files ...]
 #
-# before_pattern:
-#     Match first occurence of this pattern in each of files.
-#     Example: '.' matches the first character
-#
-# after_pattern:
-#     Replace before_pattern match in each filename with this.
-#     Example: '\0a' appends an 'a' after the matched before_pattern.
-#
-# files:
-#     One or more filenames to apply the match and replace to.
+# before_pattern:: Match first occurence of this pattern in each of files.
+#                  Example: '.' matches the first character
+# after_pattern::  Replace before_pattern match in each filename with this.
+#                  Example: '\0a' appends an 'a' after the matched
+#                  before_pattern.
+# files::          One or more filenames to apply the match and replace to.
 #
 # === Options
 #
-# -h --help:
-#     This help
-# -p --pretend:
-#     Print how the file names would change rather than actually doing it.
-# -v --verbose:
-#     Print each rename in the order it happens.
+# -h --help::           This help
+# -p --pretend::        Print how the file names would change rather than
+#                       actually doing it.
+# -s X --tmp-suffix X:: Set the temporary rename suffix to *X* (default of
+#                       `.rename.tmp')
+# -v --verbose::        Print each rename in the order it happens.
 
 require 'getoptlong'
 
@@ -38,12 +34,14 @@ end
 
 print_action = false
 do_action = true
+tmpsuffix='.rename.tmp'
 
 usage if ARGV.length == 0
 
 opts = GetoptLong.new(
   [ '--help', '-h', GetoptLong::NO_ARGUMENT ],
   [ '--pretend', '-p', GetoptLong::NO_ARGUMENT ],
+  [ '--tmp-suffix', '-s', GetoptLong::REQUIRED_ARGUMENT ],
   [ '--verbose', '-v', GetoptLong::NO_ARGUMENT ]
 )
 
@@ -53,6 +51,8 @@ opts.each do |opt, arg|
     usage
   when '--verbose'
     print_action = true
+  when '--tmp-suffix'
+    tmpsuffix = arg.to_s
   when '--pretend'
     print_action = true
     do_action = false
@@ -65,7 +65,6 @@ replace_pat = ARGV.shift
 puts "I would do the following renames without --pretend/-p:" if not do_action and print_action
 
 oldnames = ARGV
-tmpnames = oldnames.map { |oldname| "#{oldname}.rename.tmp" }
 newnames = oldnames.map { |oldname| oldname.sub(match_pat, replace_pat) }
 
 # first pass. rename a file to its new name unless it may overwrite another one
@@ -73,7 +72,7 @@ newnames = oldnames.map { |oldname| oldname.sub(match_pat, replace_pat) }
 tmpnames = []
 oldnames.each_index do |i|
   if oldnames.include? newnames[i]
-    tmpnames[i] = "#{oldnames[i]}.rename.tmp"
+    tmpnames[i] = "#{oldnames[i]}#{tmpsuffix}"
     puts "#{oldnames[i]} => #{tmpnames[i]}" if print_action
     File.rename(oldnames[i], tmpnames[i]) if do_action
   else

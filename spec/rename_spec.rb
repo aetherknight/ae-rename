@@ -160,4 +160,27 @@ describe RENAME do
     File.open('aaa') { |a| a.readlines[0].should == 'aa' }
   end
 
+  it "should let the user specify a suffix for temporary renames" do
+    # make files a and aa, each with their name as their contents
+    File.open('a', "w") { |a| a.write "a" }
+    File.open('aa', "w") { |aa| aa.write "aa" }
+    # verify this setup
+    Dir.entries('.').should be_include('a')
+    File.open('a') { |a| a.readlines[0].should == 'a' }
+    Dir.entries('.').should be_include('aa')
+    File.open('aa') { |a| a.readlines[0].should == 'aa' }
+    # make sure the result file does not exist yet
+    Dir.entries('.').should_not be_include('aaa')
+
+    PTY.spawn("#{@rename} --verbose --tmp-suffix=.temp '.+' '\\0a' *") do |stdin, stdout, pid|
+      stdin.expect("a => a.temp").should_not == nil
+      stdin.expect("a.temp => aa").should_not == nil
+    end
+
+    Dir.entries('.').should_not be_include('a')
+    Dir.entries('.').should be_include('aa')
+    File.open('aa') { |a| a.readlines[0].should == 'a' }
+    Dir.entries('.').should be_include('aaa')
+    File.open('aaa') { |a| a.readlines[0].should == 'aa' }
+  end
 end
