@@ -22,16 +22,16 @@ describe RENAME do
   end
 
   it "should print its usage if it receives no arguments" do
-    PTY.spawn("#{@rename}") do |stdin, stdout, pid|
-      stdin.should expect(/(.*)Usage(.*)$/)
-      stdin.should expect(/rename (.*)\r\n/)
+    PTY.spawn("#{@rename}") do |spawnout, spawnin, pid|
+      spawnout.should expect(/(.*)Usage(.*)$/)
+      spawnout.should expect(/rename (.*)\r\n/)
     end
   end
 
   it "should print its usage if --help is specified" do
-    PTY.spawn("#{@rename} --help") do |stdin, stdout, pid|
-      stdin.should expect(/(.*)Usage(.*)$/)
-      stdin.should expect(/rename (.*)\r\n/)
+    PTY.spawn("#{@rename} --help") do |spawnout, spawnin, pid|
+      spawnout.should expect(/(.*)Usage(.*)$/)
+      spawnout.should expect(/rename (.*)\r\n/)
     end
   end
 
@@ -40,8 +40,8 @@ describe RENAME do
     Dir.entries('.').should be_include('a')
     Dir.entries('.').should_not be_include('b')
 
-    PTY.spawn("#{@rename} 'a' 'b' a") do |stdin, stdout, pid|
-      stdin.should_not expect(".*")
+    PTY.spawn("#{@rename} 'a' 'b' a") do |spawnout, spawnin, pid|
+      spawnout.should_not expect(".*")
     end
     Dir.entries('.').should_not be_include('a')
     Dir.entries('.').should be_include('b')
@@ -52,8 +52,8 @@ describe RENAME do
     Dir.entries('.').should be_include('bc')
     Dir.entries('.').should_not be_include('cdc')
 
-    PTY.spawn("#{@rename} 'b' 'cd' bc") do |stdin, stdout, pid|
-      stdin.should_not expect(".*")
+    PTY.spawn("#{@rename} 'b' 'cd' bc") do |spawnout, spawnin, pid|
+      spawnout.should_not expect(".*")
     end
     Dir.entries('.').should_not be_include('bc')
     Dir.entries('.').should be_include('cdc')
@@ -64,8 +64,8 @@ describe RENAME do
     Dir.entries('.').should be_include('bc')
     Dir.entries('.').should_not be_include('ccd')
 
-    PTY.spawn("#{@rename} 'b(.)' '\\1cd' bc") do |stdin, stdout, pid|
-      stdin.should_not expect(".*")
+    PTY.spawn("#{@rename} 'b(.)' '\\1cd' bc") do |spawnout, spawnin, pid|
+      spawnout.should_not expect(".*")
     end
     Dir.entries('.').should_not be_include('bc')
     Dir.entries('.').should be_include('ccd')
@@ -80,8 +80,8 @@ describe RENAME do
     Dir.entries('.').should_not be_include('ba')
     Dir.entries('.').should_not be_include('ca')
 
-    PTY.spawn("#{@rename} '.' '\\0a' *") do |stdin, stdout, pid|
-      stdin.should_not expect(".*")
+    PTY.spawn("#{@rename} '.' '\\0a' *") do |spawnout, spawnin, pid|
+      spawnout.should_not expect(".*")
     end
 
     Dir.entries('.').should_not be_include('a')
@@ -101,10 +101,10 @@ describe RENAME do
     Dir.entries('.').should_not be_include('ba')
     Dir.entries('.').should_not be_include('ca')
 
-    PTY.spawn("#{@rename} --verbose '.' '\\0a' *") do |stdin, stdout, pid|
-      stdin.should expect("a => aa")
-      stdin.should expect("b => ba")
-      stdin.should expect("c => ca")
+    PTY.spawn("#{@rename} --verbose '.' '\\0a' *") do |spawnout, spawnin, pid|
+      spawnout.should expect("a => aa")
+      spawnout.should expect("b => ba")
+      spawnout.should expect("c => ca")
     end
 
     Dir.entries('.').should_not be_include('a')
@@ -124,10 +124,10 @@ describe RENAME do
     Dir.entries('.').should_not be_include('ba')
     Dir.entries('.').should_not be_include('ca')
 
-    PTY.spawn("#{@rename} --pretend '.' '\\0a' *") do |stdin, stdout, pid|
-      stdin.should expect("a => aa")
-      stdin.should expect("b => ba")
-      stdin.should expect("c => ca")
+    PTY.spawn("#{@rename} --pretend '.' '\\0a' *") do |spawnout, spawnin, pid|
+      spawnout.should expect("a => aa")
+      spawnout.should expect("b => ba")
+      spawnout.should expect("c => ca")
     end
 
     Dir.entries('.').should be_include('a')
@@ -150,8 +150,8 @@ describe RENAME do
     # make sure the result file does not exist yet
     Dir.entries('.').should_not be_include('aaa')
 
-    PTY.spawn("#{@rename} '.+' '\\0a' *") do |stdin, stdout, pid|
-      stdin.should_not expect(".*")
+    PTY.spawn("#{@rename} '.+' '\\0a' *") do |spawnout, spawnin, pid|
+      spawnout.should_not expect(".*")
     end
 
     Dir.entries('.').should_not be_include('a')
@@ -173,9 +173,9 @@ describe RENAME do
     # make sure the result file does not exist yet
     Dir.entries('.').should_not be_include('aaa')
 
-    PTY.spawn("#{@rename} --verbose --tmp-suffix=.temp '.+' '\\0a' *") do |stdin, stdout, pid|
-      stdin.should expect("a => a.temp")
-      stdin.should expect("a.temp => aa")
+    PTY.spawn("#{@rename} --verbose --tmp-suffix=.temp '.+' '\\0a' *") do |spawnout, spawnin, pid|
+      spawnout.should expect("a => a.temp")
+      spawnout.should expect("a.temp => aa")
     end
 
     Dir.entries('.').should_not be_include('a')
