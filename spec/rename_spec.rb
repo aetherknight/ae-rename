@@ -1,31 +1,34 @@
 
+require "rubygems"
+require "mkdtemp"
+
 require "pty"
 require "expect"
 
-RENAME = "../bin/rename"
-TESTDIR = "testdir"
+RENAME = File.join("bin","rename")
 
 describe RENAME do
   before(:each) do
     @currdir = Dir.getwd
-    Dir.mkdir(TESTDIR)
-    Dir.chdir(TESTDIR)
+    @rename = File.join(@currdir, RENAME)
+    @tempdir = Dir.mkdtemp
+    Dir.chdir(@tempdir)
   end
 
   after(:each) do
     Dir.chdir(@currdir)
-    `rm -rf #{TESTDIR}`
+    `rm -rf #{@tempdir}`
   end
 
   it "should print its usage if it receives no arguments" do
-    PTY.spawn("#{RENAME}") do |stdin, stdout, pid|
+    PTY.spawn("#{@rename}") do |stdin, stdout, pid|
       stdin.expect(/(.*)Usage(.*)$/).should_not == nil
       stdin.expect(/rename (.*)\r\n/).should_not == nil
     end
   end
 
   it "should print its usage if --help is specified" do
-    PTY.spawn("#{RENAME} --help") do |stdin, stdout, pid|
+    PTY.spawn("#{@rename} --help") do |stdin, stdout, pid|
       stdin.expect(/(.*)Usage(.*)$/).should_not == nil
       stdin.expect(/rename (.*)\r\n/).should_not == nil
     end
@@ -36,7 +39,7 @@ describe RENAME do
     Dir.entries('.').should be_include('a')
     Dir.entries('.').should_not be_include('b')
 
-    PTY.spawn("#{RENAME} 'a' 'b' a") do |stdin, stdout, pid|
+    PTY.spawn("#{@rename} 'a' 'b' a") do |stdin, stdout, pid|
       stdin.expect("").should == nil
     end
     Dir.entries('.').should_not be_include('a')
@@ -48,7 +51,7 @@ describe RENAME do
     Dir.entries('.').should be_include('bc')
     Dir.entries('.').should_not be_include('cdc')
 
-    PTY.spawn("#{RENAME} 'b' 'cd' bc") do |stdin, stdout, pid|
+    PTY.spawn("#{@rename} 'b' 'cd' bc") do |stdin, stdout, pid|
       stdin.expect("").should == nil
     end
     Dir.entries('.').should_not be_include('bc')
@@ -60,7 +63,7 @@ describe RENAME do
     Dir.entries('.').should be_include('bc')
     Dir.entries('.').should_not be_include('ccd')
 
-    PTY.spawn("#{RENAME} 'b(.)' '\\1cd' bc") do |stdin, stdout, pid|
+    PTY.spawn("#{@rename} 'b(.)' '\\1cd' bc") do |stdin, stdout, pid|
       stdin.expect("").should == nil
     end
     Dir.entries('.').should_not be_include('bc')
@@ -76,7 +79,7 @@ describe RENAME do
     Dir.entries('.').should_not be_include('ba')
     Dir.entries('.').should_not be_include('ca')
 
-    PTY.spawn("#{RENAME} '.' '\\0a' *") do |stdin, stdout, pid|
+    PTY.spawn("#{@rename} '.' '\\0a' *") do |stdin, stdout, pid|
       stdin.expect("").should == nil
     end
 
@@ -97,7 +100,7 @@ describe RENAME do
     Dir.entries('.').should_not be_include('ba')
     Dir.entries('.').should_not be_include('ca')
 
-    PTY.spawn("#{RENAME} --verbose '.' '\\0a' *") do |stdin, stdout, pid|
+    PTY.spawn("#{@rename} --verbose '.' '\\0a' *") do |stdin, stdout, pid|
       stdin.expect("a => aa").should_not == nil
       stdin.expect("b => ba").should_not == nil
       stdin.expect("c => ca").should_not == nil
@@ -120,7 +123,7 @@ describe RENAME do
     Dir.entries('.').should_not be_include('ba')
     Dir.entries('.').should_not be_include('ca')
 
-    PTY.spawn("#{RENAME} --pretend '.' '\\0a' *") do |stdin, stdout, pid|
+    PTY.spawn("#{@rename} --pretend '.' '\\0a' *") do |stdin, stdout, pid|
       stdin.expect("a => aa").should_not == nil
       stdin.expect("b => ba").should_not == nil
       stdin.expect("c => ca").should_not == nil
