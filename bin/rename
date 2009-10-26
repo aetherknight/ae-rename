@@ -7,7 +7,7 @@
 # to their name.
 #
 # == Usage
-# rename [-p|--pretend] before_pattern after_pattern [files ...]
+# rename [options] before_pattern after_pattern [files ...]
 #
 # before_pattern:
 #     Match first occurence of this pattern in each of files.
@@ -22,10 +22,12 @@
 #
 # === Options
 #
-# -p --pretend:
-#     Print how the file names would change rather than actually doing it.
 # -h --help:
 #     This help
+# -p --pretend:
+#     Print how the file names would change rather than actually doing it.
+# -v --verbose:
+#     Print each rename in the order it happens.
 
 require 'getoptlong'
 
